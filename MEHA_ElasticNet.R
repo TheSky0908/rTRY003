@@ -1,0 +1,198 @@
+#' Elastic Net Based on MEHA
+#' @description
+#'     Elastic Net combines the penalties of Lasso (L1 regularization) and Ridge
+#'     (L2 regularization) methods. This approach is beneficial when there are
+#'     multiple correlated predictors. By balancing the L1 and L2 penalties,
+#'     Elastic Net encourages both sparsity (like Lasso) and grouping of
+#'     correlated variables (like Ridge). The model introduces two hyperparameters:
+#'     alpha (α), which controls the mix between Lasso and Ridge, and lambda (λ),
+#'     which determines the overall strength of regularization.
+#'     This function is to ......
+#'
+#'
+#' @param A_val Input feature matrix of validation set, of dimension n by p,
+#'     where n is the total number of validation samples and p is feature number.
+#'     Hence, each row is an observation vector.
+#' @param b_val Quantitative response variable of validation set.
+#' @param A_tr Input feature matrix of training set, of dimension n' by p,
+#'     where n' is the total number of training samples and p is feature number.
+#' @param b_tr Quantitative response variable of training set.
+#' @param N Total iterations. Default is 500.
+#' @param alpha Default is 0.001.
+#' @param beta Default is 1e-5.
+#' @param eta Default is 1e-5.
+#' @param gamma Default is 2.
+#' @param c Default is 2.
+#' @param p Default is 0.48.
+#' @param auto_tuning Whether an auto-hyperparameter-tuning is needed.
+#'     Default is \code{FALSE}.
+#' @param temperature Temperature of simulating annealing method for auto-
+#'     hyperparameter-tuning. Default is 0.1.
+#'
+#' @return a list with 7 components:
+#' \describe{
+#'   \item{x}{to}
+#'   \item{y}{Coefficients}
+#'   \item{theta}{to}
+#'   \item{Xconv}{The convergence of sequence X}
+#'   \item{Yconv}{The convergence of sequence Y}
+#'   \item{Thetaconv}{The convergence of sequence theta}
+#'   \item{Fseq}{The convergence of upper function}
+#' }
+#'
+#' @export
+#'
+
+MEHA_Elasticnet = function(A_val, b_val, A_tr, b_tr, N = 500, alpha = 1e-3, beta = 1e-5, eta = 1e-5, gamma = 2, c = 2, p = 0.48, auto_tuning = FALSE, temperature = 0.1){
+
+  library(progress)
+  library(truncnorm)
+
+
+  main_fun <- function(A_val, b_val, A_tr, b_tr, N, alpha, beta, eta, gamma = gamma, c = c, p = p){
+
+    p_fea = dim(A_val)[2]
+    #print(p_fea)
+
+    x = matrix(rep(1), nrow = 2)
+    y = matrix(rep(10), nrow = p_fea)
+    theta = matrix(rep(15), nrow = p_fea)
+    e2 = matrix(rep(0), nrow = 2)
+    ep = matrix(rep(0), nrow = p_fea)
+
+    # objective function
+    F = function(x,y){
+      result = 0.5*norm(A_val %*% y - b_val, type = "2")^2
+      return(result)
+    }
+
+    phi = function(x, y){
+      result = 0.5*norm(A_tr %*%  y - b_tr, type = "2")^2 + cbind(norm(y, type = "1"), 0.5*norm(y,type = "2")^2 ) %*% x
+      return(result)
+    }
+
+
+    # update function
+    F_x = function(x, y){
+      result = t(matrix(rep(0, 2), ncol = 2))
+      return(result)
+    }
+
+    F_y = function(x, y){
+      result = t(t(A_val %*% y - b_val) %*% A_val)
+      return(result)
+    }
+
+    f_x = function(x, y){
+      result = rbind(0, 0.5*norm(y,type = "2")^2 )
+      return(result)
+    }
+
+    f_y = function(x, y){
+      result = t(t(A_tr %*% y - b_tr) %*% A_tr + x[2] * t(y))
+      return(result)
+    }
+
+    g_x = function(x, y){
+      result =  rbind(norm(y,type = "1"), 0)
+      return(result)
+    }
+
+    ## proximal operator
+    prox_eta = function(x, y, theta){
+      z = theta - eta * (f_y(x, theta) + (theta - y) / gamma)
+      lambda = eta * matrix(rep(x[1], p_fea), nrow = p_fea)
+      result = sign(z) * pmax((abs(z) - lambda), 0*ep)
+    }
+
+    prox_beta = function(x, y, dky){
+      z = y - beta * dky
+      lambda = eta * matrix(rep(x[1], p_fea), nrow = p_fea)
+      result = sign(z) * pmax((abs(z) - beta * lambda), 0*ep)
+    }
+
+
+
+    ## algorithm
+    arrF = numeric(N) # F(x^{k+1},y^{k+1})
+    res1 = numeric(N) #||x^{k+1}-x^k|| / ||x^K||
+    res2 = numeric(N) #||y^{k+1}-y^k|| / ||y^K||
+    res3 = numeric(N) #||theta^{k+1}-theta^k|| / ||theta^K||
+
+    for (k in 1:N) {
+      xk = x
+      yk = y
+      thetak = theta
+      # ck = 0.49
+      ck = c*(k + 1)^p
+      theta = prox_eta(x, y, theta)
+      dkx = (1/ck) * F_x(x, y) + f_x(x, y) + g_x(x, y) - f_x(x, theta) - g_x(x, theta)
+      x = pmax(x - alpha * dkx,0*e2)
+      dky = (1/ck) * F_y(x, y) + f_y(x, y) - (y - theta)/gamma
+      y = prox_beta(x, y, dky)
+      res1[k] = norm(x - xk , "2") / norm(xk, "2")
+      res2[k] = norm(y - yk, "2") / norm(yk, "2")
+      res3[k] = norm(theta - thetak, "2") / norm(thetak, "2")
+      arrF[k] = F(x, y)
+    }
+
+    return(list(x = x, y = y, theta = theta, Xconv = res1, Yconv = res2, Thetaconv= res3, Fseq = arrF))
+  }
+
+  if(auto_tuning == TRUE){
+    message("\n","Auto-hyperparameters-tuning is proceeding now.")
+
+    iter <- 100
+    T <- temperature
+
+    pb <- progress_bar$new(
+      total = iter,
+      format = "  Finished :current/:total [:bar] :percent  remaining time :eta"
+    )
+
+
+    alpha.seq <- numeric(iter)
+    beta.seq <- numeric(iter)
+    eta.seq <- numeric(iter)
+    value <- numeric(iter)
+
+    alpha.seq[1] <- alpha
+    beta.seq[1] <- beta
+    eta.seq[1] <- eta
+
+    result = main_fun(A_val, b_val, A_tr, b_tr, N, alpha = alpha.seq[1], beta = beta.seq[1], eta = eta.seq[1], gamma = gamma, c = c, p = p)
+    value[1] <- result$Fseq[order(result$Fseq, decreasing = FALSE)[1]]
+
+
+
+    set.seed(123)
+    for (j in 2:iter) {
+      T <- exp(-0.0001*j)
+      alpha.seq[j] <- rtruncnorm(n = 1, a = 0, mean = alpha.seq[j-1], sd = 1e-3)
+      beta.seq[j] <- rtruncnorm(n = 1, a = 0, mean = beta.seq[j-1], sd = 1e-6)
+      eta.seq[j] <- rtruncnorm(n = 1, a = 0, mean = eta.seq[j-1], sd = 1e-6)
+      result = main_fun(A_val, b_val, A_tr, b_tr, N, alpha = alpha.seq[j], beta = beta.seq[j], eta = eta.seq[j], gamma = gamma, c = c, p = p)
+      candidate <- result$Fseq[order(result$Fseq, decreasing = FALSE)[1]]
+      if(candidate > value[j-1] & runif(n = 1) > exp((value[j-1]-candidate)/T)){
+        value[j] <- value[j-1]
+      } else {
+        value[j] <- candidate
+      }
+      pb$tick()
+    }
+
+    opt_index <- order(value)[1]
+
+    #plot(value, type = "l", xlab = "iteration")
+
+    cat("\n", "Auto-hyperparameters-tuning is done.")
+    cat("\nFinal hyper-paramaters (alpha,beta,eta) are chosen as:",c(alpha.seq[opt_index], beta.seq[opt_index], eta.seq[opt_index]))
+
+    return(main_fun(A_val, b_val, A_tr, b_tr, N, alpha = alpha.seq[opt_index], beta = beta.seq[opt_index], eta = eta.seq[opt_index], gamma, c, p))
+
+  } else{
+    return(main_fun(A_val, b_val, A_tr, b_tr, N, alpha, beta, eta, gamma, c, p))
+  }
+
+
+}
