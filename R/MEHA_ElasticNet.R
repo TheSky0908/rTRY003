@@ -1,18 +1,16 @@
-#' Elastic Net Based on MEHA
-#' @description
-#'     Elastic Net combines the penalties of Lasso (L1 regularization) and Ridge
-#'     (L2 regularization) methods. This approach is beneficial when there are
-#'     multiple correlated predictors. By balancing the L1 and L2 penalties,
-#'     Elastic Net encourages both sparsity (like Lasso) and grouping of
-#'     correlated variables (like Ridge). The model introduces two hyperparameters:
-#'     alpha (α), which controls the mix between Lasso and Ridge, and lambda (λ),
-#'     which determines the overall strength of regularization.
-#'     This function is to ......
+#' Solving Elastic Net Problem Based on MEHA
+#' @description Elastic Net combines the penalties of Lasso (L1 regularization)
+#'     and Ridge (L2 regularization) methods. Thus the model introduces two
+#'     hyperparameters: \code{x1}, which controls the strength of L1 regularization;
+#'     and \code{x2}, which controls the strength of L2 regularization.
+#'     The purpose of this function is to determine the optimal feature
+#'     coefficients \code{y} and the hyperparameters \code{x1} and \code{x2} of the
+#'     elastic net based on the input training and validation sets using MEHA.
 #'
 #'
-#' @param A_val Input feature matrix of validation set, of dimension n by p,
-#'     where n is the total number of validation samples and p is feature number.
-#'     Hence, each row is an observation vector.
+#' @param A_val Input feature matrix of the validation set, with dimensions n by p,
+#'     where n is the total number of validation samples and p is the number of features.
+#'     Each row represents an observation vector.
 #' @param b_val Quantitative response variable of validation set.
 #' @param A_tr Input feature matrix of training set, of dimension n' by p,
 #'     where n' is the total number of training samples and p is feature number.
@@ -29,16 +27,21 @@
 #' @param temperature Temperature of simulating annealing method for auto-
 #'     hyperparameter-tuning. Default is 0.1.
 #'
-#' @return a list with 7 components:
-#' \describe{
-#'   \item{x}{to}
-#'   \item{y}{Coefficients}
+#' @return
+#'
+#'   \item{x}{The first value is \code{x1} (Lasso penalty strength), while the second
+#'       value is \code{x2} (Ridge penalty strength).}
+#'   \item{y}{The feature coefficient vector, of dimension p, where p is the
+#'       feature number.}
 #'   \item{theta}{to}
-#'   \item{Xconv}{The convergence of sequence X}
-#'   \item{Yconv}{The convergence of sequence Y}
-#'   \item{Thetaconv}{The convergence of sequence theta}
-#'   \item{Fseq}{The convergence of upper function}
-#' }
+#'   \item{Xconv}{Describe the relative convergence situation of sequence X,
+#'       based on l2-norm.}
+#'   \item{Yconv}{Describe the relative convergence situation of sequence Y,
+#'       based on l2-norm.}
+#'   \item{Thetaconv}{Describe the relative convergence situation of sequence theta,
+#'       based on l2-norm.}
+#'   \item{Fseq}{The upper function value in each iteration.}
+#'
 #'
 #' @export
 #'

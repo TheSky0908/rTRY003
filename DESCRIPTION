@@ -1,10 +1,14 @@
 Package: rTRY003
-Title: What the Package Does (One Line, Title Case)
+Title: Using MEHA to Deal with Hyperpamater Selection in Machine Learning
 Version: 0.8
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    c(person("Zhiheng", "Tan", , "12111603@mail.sustech.edu.cn", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+          person("Pengyu","Zhu", role = "aut") 
+           )
+Description: An R package to handle with hyperparameter selection strategy in 
+    machine learning methods such as elastic net, sparse group Lasso, low rank 
+    matrix completion and SVM.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8

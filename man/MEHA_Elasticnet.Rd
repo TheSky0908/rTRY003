@@ -2,7 +2,7 @@
 % Please edit documentation in R/MEHA_ElasticNet.R
 \name{MEHA_Elasticnet}
 \alias{MEHA_Elasticnet}
-\title{Elastic Net Based on MEHA}
+\title{Solving Elastic Net Problem Based on MEHA}
 \usage{
 MEHA_Elasticnet(
   A_val,
@@ -21,9 +21,9 @@ MEHA_Elasticnet(
 )
 }
 \arguments{
-\item{A_val}{Input feature matrix of validation set, of dimension n by p,
-where n is the total number of validation samples and p is feature number.
-Hence, each row is an observation vector.}
+\item{A_val}{Input feature matrix of the validation set, with dimensions n by p,
+where n is the total number of validation samples and p is the number of features.
+Each row represents an observation vector.}
 
 \item{b_val}{Quantitative response variable of validation set.}
 
@@ -53,25 +53,25 @@ Default is \code{FALSE}.}
 hyperparameter-tuning. Default is 0.1.}
 }
 \value{
-a list with 7 components:
-\describe{
-\item{x}{to}
-\item{y}{Coefficients}
+\item{x}{The first value is \code{x1} (Lasso penalty strength), while the second
+value is \code{x2} (Ridge penalty strength).}
+\item{y}{The feature coefficient vector, of dimension p, where p is the
+feature number.}
 \item{theta}{to}
-\item{Xconv}{The convergence of sequence X}
-\item{Yconv}{The convergence of sequence Y}
-\item{Thetaconv}{The convergence of sequence theta}
-\item{Fseq}{The convergence of upper function}
-}
+\item{Xconv}{Describe the relative convergence situation of sequence X,
+based on l2-norm.}
+\item{Yconv}{Describe the relative convergence situation of sequence Y,
+based on l2-norm.}
+\item{Thetaconv}{Describe the relative convergence situation of sequence theta,
+based on l2-norm.}
+\item{Fseq}{The upper function value in each iteration.}
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Elastic Net combines the penalties of Lasso (L1 regularization) and Ridge
-(L2 regularization) methods. This approach is beneficial when there are
-multiple correlated predictors. By balancing the L1 and L2 penalties,
-Elastic Net encourages both sparsity (like Lasso) and grouping of
-correlated variables (like Ridge). The model introduces two hyperparameters:
-alpha (α), which controls the mix between Lasso and Ridge, and lambda (λ),
-which determines the overall strength of regularization.
-This function is to ......
-}\if{html}{\out{</div>}}
+Elastic Net combines the penalties of Lasso (L1 regularization)
+and Ridge (L2 regularization) methods. Thus the model introduces two
+hyperparameters: \code{x1}, which controls the strength of L1 regularization;
+and \code{x2}, which controls the strength of L2 regularization.
+The purpose of this function is to determine the optimal feature
+coefficients \code{y} and the hyperparameters \code{x1} and \code{x2} of the
+elastic net based on the input training and validation sets using MEHA.
 }

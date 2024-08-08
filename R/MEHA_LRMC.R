@@ -1,14 +1,25 @@
 #' Low Rank Matrix Completion Based on MEHA
-#' @description
-#' A short description...
+#' @description For low rank matrix completion task, suppose that for matrix M of
+#'     n by n, we observe some entries and do not have access to the rest. We
+#'     denote the row features X of n by p and column features as Z of n by p.
+#'     We model the matrix as the sum of a low rank effect \code{Q} and a
+#'     linear combination of the row features and the column features. Denote
+#'     the coefficients of row features X and column features Z by \code{a} and
+#'     \code{b}. $M = X a 1^T + Z b 1^T + Q$.
+#'     The purpose of this function is to determine the optimal feature
+#'     coefficients (i.e., \code{a} and \code{b}), low rank effect matrix \code{Q}
+#'     and the hyperparameters (penalty strength) \code{x} based on the input
+#'     training and validation sets using MEHA.
 #'
-#' @param M_val to be written...
-#' @param M_tr to be written...
-#' @param M_val_index to be written...
-#' @param M_tr_index to be written...
-#' @param A to be written...
-#' @param B to be written...
-#' @param group Group information.
+#'
+#' @param M_val Input matrix for validation.
+#' @param M_tr Input matrix for training.
+#' @param M_val_index Index of validation entries.
+#' @param M_tr_index Index of training entries.
+#' @param A Row feature matrix of n by p.
+#' @param B Column feature matrix of n by p.
+#' @param group A vector to describe the feature group information, with each
+#'     element representing the specific number of features in each group.
 #' @param N Total iterations. Default is 300.
 #' @param alpha Default is 1e-4.
 #' @param beta Default is 1e-4.
@@ -21,16 +32,27 @@
 #' @param temperature Temperature of simulating annealing method for auto-
 #'     hyperparameter-tuning. Default is 0.1.
 #'
-#' @return a list with 7 components:
-#' \describe{
-#'   \item{x}{to}
-#'   \item{y}{Coefficients}
-#'   \item{theta}{to}
-#'   \item{Xconv}{The convergence of sequence X}
-#'   \item{Yconv}{The convergence of sequence Y}
-#'   \item{Thetaconv}{The convergence of sequence theta}
-#'   \item{Fseq}{The convergence of upper function}
-#' }
+#' @return
+#'
+#'   \item{x}{A vector of length (2M+1), where M denotes the total group number.
+#'       The first M values are the within-group penalty strengths of row feature
+#'       coefficients \code{a}, the second M values are within-group penalty strength
+#'       of column feature coefficients \code{b}, the last value is the penalty
+#'       strengths of low rank effect matrix \code{Q}.}
+#'   \item{a}{Row feature coefficient.}
+#'   \item{b}{Column feature coefficient.}
+#'   \item{Q}{low rank effect matrix.}
+#'   \item{theta_a}{to}
+#'   \item{theta_b}{to}
+#'   \item{theta_Q}{to}
+#'   \item{Xconv}{Describe the relative convergence situation of sequence X,
+#'       based on l2-norm.}
+#'   \item{Yconv}{Describe the relative convergence situation of sequence Y,
+#'       based on l2-norm.}
+#'   \item{Thetaconv}{Describe the relative convergence situation of sequence theta,
+#'       based on l2-norm.}
+#'   \item{Fseq}{The upper function value in each iteration.}
+#'
 #'
 #' @export
 #'

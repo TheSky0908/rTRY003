@@ -31,7 +31,9 @@ is an observation vector.}
 
 \item{b_tr}{Quantitative response variable of training set.}
 
-\item{group}{Describe group information.}
+\item{group}{A vector of length M (where M denotes the total group number) to
+describe the feature group information, with each element representing the
+specific number of features in each group.}
 
 \item{N}{Total iterations. Default is 300.}
 
@@ -47,35 +49,37 @@ is an observation vector.}
 
 \item{p}{Default is 0.3.}
 
-\item{auto_tuning}{Whether an auto-hyperparameter-tuning is needed. Default is
-\code{FALSE}.}
+\item{auto_tuning}{Whether an auto-hyperparameter-tuning is needed.
+Default is \code{FALSE}.}
 
 \item{temperature}{Temperature of simulating annealing method for auto-
 hyperparameter-tuning. Default is 0.01.}
 }
 \value{
-a list with 7 components:
-\describe{
-\item{x}{to}
-\item{y}{Coefficients}
+\item{x}{A vector of length (M+1), where M denotes the total group number.
+The first M values are the within-group penalty strengths, while the last
+value represents the group penalty.}
+\item{y}{The feature coefficient vector, of dimension p, where p is the
+feature number.}
 \item{theta}{to}
-\item{Xconv}{The convergence of sequence X}
-\item{Yconv}{The convergence of sequence Y}
-\item{Thetaconv}{The convergence of sequence theta}
-\item{Fseq}{The convergence of upper function}
-}
+\item{Xconv}{Describe the relative convergence situation of sequence X,
+based on l2-norm.}
+\item{Yconv}{Describe the relative convergence situation of sequence Y,
+based on l2-norm.}
+\item{Thetaconv}{Describe the relative convergence situation of sequence theta,
+based on l2-norm.}
+\item{Fseq}{The upper function value in each iteration.}
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Sparse Group Lasso extends the Lasso and Group Lasso techniques by
-enforcing sparsity both at the group level and within each group. It is
-useful when predictors can be naturally grouped (e.g., genetic data,
-where genes form groups). Sparse Group Lasso applies an L1 penalty to
-individual coefficients and an L2 penalty to groups of coefficients,
-encouraging sparsity within and between groups. This approach introduces
-two hyperparameters: group penalty (λ1) and within-group penalty (λ2),
-which control the extent of regularization.
-his function is to ......
-}\if{html}{\out{</div>}}
+Sparse Group Lasso extends the Lasso and Group Lasso techniques
+by enforcing sparsity both at the group level and within each group. Sparse
+Group Lasso applies an L2 penalty to groups of coefficients and an L1
+penalty to individual coefficients, encouraging sparsity within and between
+groups. This approach introduces two hyperparameters: within-group penalty
+and group penalty which control the extent of regularization.
+The purpose of this function is to determine the optimal feature
+coefficients \code{y} and the hyperparameters \code{x} of the sparse group
+Lasso based on the input training and validation sets using MEHA.
 }
 \examples{
 library(mvtnorm)
