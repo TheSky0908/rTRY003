@@ -37,15 +37,17 @@ specific number of features in each group.}
 
 \item{N}{Total iterations. Default is 300.}
 
-\item{alpha}{Default is 1e-5.}
+\item{alpha}{Proximal gradient stepsize of \code{x}. Default is 1e-5.}
 
-\item{beta}{Default is 1e-5.}
+\item{beta}{Proximal gradient stepsize of \code{y}. Default is 1e-5.}
 
-\item{eta}{Default is 1e-5.}
+\item{eta}{Proximal gradient stepsize of the proxima \code{theta}.
+Default is 1e-5.}
 
-\item{gamma}{Default is 1.}
+\item{gamma}{Moreau envelope parameter. Default is 1.}
 
-\item{c}{Default is 1.}
+\item{c}{Penalty strength of the Moreau envelope inequality constraint.
+Default is 1.}
 
 \item{p}{Default is 0.3.}
 

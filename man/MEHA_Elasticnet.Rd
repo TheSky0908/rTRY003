@@ -22,8 +22,8 @@ MEHA_Elasticnet(
 }
 \arguments{
 \item{A_val}{Input feature matrix of the validation set, with dimensions n by p,
-where n is the total number of validation samples and p is the number of features.
-Each row represents an observation vector.}
+where n is the total number of validation samples and p is the number of
+features. Each row represents an observation vector.}
 
 \item{b_val}{Quantitative response variable of validation set.}
 
@@ -34,15 +34,17 @@ where n' is the total number of training samples and p is feature number.}
 
 \item{N}{Total iterations. Default is 500.}
 
-\item{alpha}{Default is 0.001.}
+\item{alpha}{Proximal gradient stepsize of \code{x}. Default is 0.001.}
 
-\item{beta}{Default is 1e-5.}
+\item{beta}{Proximal gradient stepsize of \code{y}. Default is 1e-5.}
 
-\item{eta}{Default is 1e-5.}
+\item{eta}{Proximal gradient stepsize of the proxima \code{theta}.
+Default is 1e-5.}
 
-\item{gamma}{Default is 2.}
+\item{gamma}{Moreau envelope parameter. Default is 2.}
 
-\item{c}{Default is 2.}
+\item{c}{Penalty strength of the Moreau envelope inequality constraint.
+Default is 2.}
 
 \item{p}{Default is 0.48.}
 
@@ -53,8 +55,8 @@ Default is \code{FALSE}.}
 hyperparameter-tuning. Default is 0.1.}
 }
 \value{
-\item{x}{The first value is \code{x1} (Lasso penalty strength), while the second
-value is \code{x2} (Ridge penalty strength).}
+\item{x}{The first value is \code{x1} (Lasso penalty strength), while the
+second value is \code{x2} (Ridge penalty strength).}
 \item{y}{The feature coefficient vector, of dimension p, where p is the
 feature number.}
 \item{theta}{to}

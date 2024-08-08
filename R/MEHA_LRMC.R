@@ -21,11 +21,13 @@
 #' @param group A vector to describe the feature group information, with each
 #'     element representing the specific number of features in each group.
 #' @param N Total iterations. Default is 300.
-#' @param alpha Default is 1e-4.
-#' @param beta Default is 1e-4.
-#' @param eta Default is 1e-4.
-#' @param gamma Default is 10.
-#' @param c Default is 2
+#' @param alpha Proximal gradient stepsize of \code{x}. Default is 1e-4.
+#' @param beta Proximal gradient stepsize of \code{a} and \code{b}. Default is 1e-4.
+#' @param eta Proximal gradient stepsize of the proxima \code{theta}. Default is
+#'      1e-4.
+#' @param gamma Moreau envelope parameter. Default is 10.
+#' @param c Penalty strength of the Moreau envelope inequality constraint.
+#'     Default is 2
 #' @param c_p Default is 0.48.
 #' @param auto_tuning Whether an auto-hyperparameter-tuning is needed.Default is
 #'     \code{FALSE}.
